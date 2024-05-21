@@ -1,0 +1,84 @@
+####################################################
+# Linear Regression in R: Template                 #
+####################################################
+# In this lab session we are not going to use the 
+# tidyverse, but only standard R functions wherever 
+# possible.
+# Part 0: Some housekeeping for getting started.
+# We need two libraries.
+# This contains the Boston data.
+library(MASS)
+# This library is only needed for the second data set.
+library(ISLR)
+# Start by looking at first data set.
+names(Boston)
+# Save boston data to workspace (this is not really necessary, but makes it easier for us to look at the data)
+boston <- Boston
+# Call documentation of data set.
+?Boston
+
+# Plot the data using R base functions)
+# We can probably create much nicer graphs using ggplot, but it's good enough for us now.
+plot(medv ~ lstat, Boston)
+
+##############################################################
+# Part 1: simple linear regression applied to the Boston data.
+##############################################################
+# Your task: estimate a simple linear regression model with the Boston data.
+# your dependent variable should be median house value, the only regressor should be lstat,
+# i.e., a measure of poverty in the neighborhood.
+# Investigate the regression output and plot the fitted regression line into the plot created above.
+# Finally, compute confidence intervals for your slop parameter and predict median house value
+# for a grid of values for lstat.
+# Key functions: lm(), summary(), abline(), predict()
+
+# INSERT YOUR CODE CHUNK HERE
+
+fit1 <- lm(medv ~ lstat, data = boston)
+summary(fit1)
+abline(fit1, col="red")
+names(fit1)
+fit1$coefficients
+confint(fit1)
+
+predict(fit1, data.frame(lstat=c(5,10,15)), )
+
+################################################################
+# Part 2: multiple linear regression applied to the Boston data.
+################################################################
+# Your task: Extend your analysis from above to a multiple linear regression model.
+# Use whatever variables you think are most plausible.
+# Afterwards, plot some model diagnostics using plot(NAME-OF-YOUR-MODEL)
+# Key functions: par(mfrow=c(2,2))
+
+# INSERT YOUR CODE CHUNK HERE
+
+fit2 <- lm(medv ~ lstat + age, data=Boston)
+summary(fit2)
+
+fit3 <- lm(medv ~ ., data=Boston)
+summary(fit3)
+
+plot(fit3)
+
+################################################################
+# Part 3: linear regression with polynomials and interaction terms.
+################################################################
+# YOUR TASK: Extend the model from the previous paragraph by incorporating some interaction terms.
+# and higher-order polynomials (squares are good enough for now)
+# Key functions: *,I(), points()
+
+# INSERT YOUR CODE CHUNK HERE
+
+####################################
+# Let's look at another other data set.
+# This part is optional, and you can use it as an additional exercise in linear regression.
+# This data set comes as part of the ISLR library.
+# Key functions that you might want to explore: :, contrasts, attach
+# View(Carseats)
+# names(Carseats)
+# Let's look at some descriptive statistics.
+# summary(Carseats)
+
+# INSERT YOUR CODE CHUNK HERE
+

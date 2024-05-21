@@ -1,0 +1,361 @@
+---
+title: "PS9"
+author: "Hrishikesh M Bharadwaj"
+date: "2023-11-02"
+output: html_document
+---
+
+#Q1)
+A)
+```{r}
+normal <- c(4.1,6.3,7.8,8.5,8.9,10.4,11.5,12.0,13.8,17.6,24.3,37.2)
+diabetic <- c(11.5,12.1,16.1,17.8,24.0,28.8,33.9,40.7,51.3,56.2,61.7,69.2)
+
+
+plot(density(normal),main='Controls',xlab='Urinary Measurements')
+
+plot(density(diabetic),main='Diabetic',xlab='Urinary Measurements')
+
+
+
+```
+These measurements seem to be from distributions that are not symmetrical. 
+
+When we look at the density plots, we can see that in both cases, the data is skewed to the right to some degree. [Upper tail of the distribution is longer than the lower tail of the distribution]
+
+The Control [Normal] group is actually more left-skewed when compared to the Diabetic Group.
+
+
+B)
+```{r}
+log_normal <- log(normal)
+log_diabetic <- log(diabetic)
+sqrt_normal <- sqrt(normal)
+sqrt_diabetic <- sqrt(diabetic)
+
+
+plot(density(log_normal),main='Logarithmic Controls',xlab='Urinary Measurements')
+plot(density(log_diabetic),main='Logarithmic Diabetic',xlab='Urinary Measurements')
+
+```
+The dataset has undergone a logarithmic transformation, and while it is not fully symmetrical, it is obviously more symmetrical now. Now that it looks a lot more like a symmetric distribution, we might be able to achieve perfect symmetry with a bigger sample size. Also, in both groups, the mean and median are close, suggesting that the distributions are approximately symmetric.
+
+
+C)
+```{r}
+
+# Transformation functions
+log_transform <- function(x) log(x)
+sqrt_transform <- function(x) sqrt(x)
+
+# Apply transformations
+log_normal <- log_transform(normal_data)
+sqrt_normal <- sqrt_transform(normal_data)
+
+log_diabetic <- log_transform(diabetic_data)
+sqrt_diabetic <- sqrt_transform(diabetic_data)
+
+# Function to summarize transformed data
+summary_transformed <- function(data, name) {
+  cat("Transformed", name, "- Mean:", mean(data), "  Median:", median(data), "\n")
+}
+
+# Summary of transformed data
+cat("Natural Logarithm Transformation:\n")
+summary_transformed(log_normal, "Normal")
+summary_transformed(log_diabetic, "Diabetic")
+
+cat("\nSquare Root Transformation:\n")
+summary_transformed(sqrt_normal, "Normal")
+summary_transformed(sqrt_diabetic, "Diabetic")
+
+# Visualize transformed data
+par(mfrow = c(2, 2))
+hist(log_normal, main = "Log Transformation - Normal", col = "lightblue")
+hist(log_diabetic, main = "Log Transformation - Diabetic", col = "lightgreen")
+hist(sqrt_normal, main = "Square Root Transformation - Normal", col = "lightcoral")
+hist(sqrt_diabetic, main = "Square Root Transformation - Diabetic", col = "lightpink")
+par(mfrow = c(1, 1))
+
+
+```
+Looking at these graphs, it's evident that the Square Root Transformation closely aligns with the qqline, although not as well as the Logarithmic Transformation. 
+
+While it approximates a normal distribution, it doesn't quite achieve it. Gathering more data might enable us to make more precise conclusions.
+
+
+D)
+
+```{r}
+# Perform t-test
+# The t-test is a statistical hypothesis test in which the test statistic follows a Student's t-distribution under the null hypothesis.
+# It is used to determine whether there is a significant difference between the means of two groups.
+t.test(log_normal, log_diabetic)
+
+```
+The findings of our Welch Two Sample t-test indicate that there is a statistically significant difference in the means of the logarithmically transformed urine β-thromboglobulin excretion between diabetes patients and normal controls.
+
+In summary, these results provide statistical backing for the researchers' claim that diabetic patients excrete more β-thromboglobulin in their urine than do healthy controls.
+
+
+
+##Q2)
+A)Since you are working with small sample sizes in this situation, you would utilize the t-distribution rather than the conventional normal distribution. The distribution of sample means tends to follow a t-distribution rather than a normal distribution when the sample size is small.
+
+The extra uncertainty created by predicting the population standard deviation from a small sample is taken into account by the t-distribution. The t-distribution takes into account the sample mean's tendency to be more variable when calculating the sample mean and standard deviation from a small sample.
+
+B)
+```{r}
+
+# Given data
+t_value <- 2.187
+degrees_of_freedom <- 11.62
+mean_difference <- 68.5 - 65.5  # men's mean - women's mean
+sd_men <- 3.0
+sd_women <- 2.5
+n_men <- 7
+n_women <- 7
+
+# Calculate margin of error
+margin_of_error <- t_value * sqrt((sd_men^2 / n_men) + (sd_women^2 / n_women))
+
+# Calculate confidence interval
+confidence_interval <- c(mean_difference - margin_of_error, mean_difference + margin_of_error)
+
+# Display the confidence interval
+cat("Approximate 95% Confidence Interval:", confidence_interval, "\n")
+
+
+```
+
+C)In this specific case, the 95% confidence interval is −0.2280086 to 6.228009, and it includes 0. Since 0 is within the interval, we do not have sufficient evidence to conclude that there is a statistically significant difference in the average heights of men and women at the university at the 95% confidence level.
+
+The interpretation is that, based on the data and the chosen confidence level, we cannot confidently say that there is a true difference in average heights between men and women. The interval is consistent with the possibility that the true difference is zero, suggesting no significant difference in average heights.
+
+
+
+##Q3)
+A)In conclusion, we opt for Welch's t-test in this situation because it can handle uneven variances and non-normal distributions effectively, particularly when dealing with large sample sizes. This allows us to test the hypothesis about the average number of weeks worked without needing to use data transformations that could make interpretation more complex.
+
+B)
+```{r}
+# Given data
+n1 <- 592
+n2 <- 154
+x1_bar <- 16.8
+s1 <- 15.9
+n2_bar <- 24.3
+s2 <- 17.3
+
+# Calculate test statistic
+t_stat <- (x1_bar - n2_bar) / sqrt((s1^2 / n1) + (s2^2 / n2))
+
+# Calculate degrees of freedom
+df <- ((s1^2 / n1 + s2^2 / n2)^2) / ((s1^2 / n1)^2 / (n1 - 1) + (s2^2 / n2)^2 / (n2 - 1))
+
+# Find the p-value
+p_value <- 2 * pt(abs(t_stat), df = df, lower.tail = FALSE)
+
+# Print the results
+cat("Test Statistic:", t_stat, "\n")
+cat("Degrees of Freedom:", df, "\n")
+cat("P-value:", p_value, "\n")
+
+
+```
+C)
+```{r}
+
+# Given data
+n1 <- 592
+n2 <- 154
+x1_bar <- 16.8
+s1 <- 15.9
+x2_bar <- 24.3
+s2 <- 17.3
+
+# Welch's t-test
+t_stat <- (x1_bar - x2_bar) / sqrt((s1^2 / n1) + (s2^2 / n2))
+
+# Degrees of freedom
+df <- ((s1^2 / n1 + s2^2 / n2)^2) / ((s1^2 / n1)^2 / (n1 - 1) + (s2^2 / n2)^2 / (n2 - 1))
+
+# Critical value for a two-tailed test at alpha = 0.05
+critical_value <- qt(0.975, df = df)
+
+# Margin of error
+margin_of_error <- critical_value * sqrt((s1^2 / n1) + (s2^2 / n2))
+
+# Confidence Interval
+lower_bound <- (x1_bar - x2_bar) - margin_of_error
+upper_bound <- (x1_bar - x2_bar) + margin_of_error
+
+cat("95% Confidence Interval:", lower_bound, "to", upper_bound, "\n")
+
+```
+
+
+##Q4)
+A)
+```{r}
+# Given data for Group A
+mean_A <- 61
+sd_A <- 10
+n_A <- 100
+
+# Given data for Group B
+mean_B <- 59
+sd_B <- 13
+n_B <- 100
+
+# Calculate the two-sample t-test statistic
+t_stat <- (mean_A - mean_B) / sqrt((sd_A^2 / n_A) + (sd_B^2 / n_B))
+
+# Calculate the degrees of freedom using the Welch approximation
+df <- ((sd_A^2 / n_A + sd_B^2 / n_B)^2) / ((sd_A^2 / n_A)^2 / (n_A - 1) + (sd_B^2 / n_B)^2 / (n_B - 1))
+
+# Calculate the p-value for a two-tailed test
+p_value <- 2 * pt(abs(t_stat), df = df, lower.tail = FALSE)
+
+# Print the results
+cat("Test Statistic:", t_stat, "\n")
+cat("Degrees of Freedom:", df, "\n")
+cat("P-value:", p_value, "\n")
+
+```
+
+B)
+```{r}
+# Given data for Group A
+mean_A <- 61
+sd_A <- 10
+n_A <- 100
+
+# Given data for Group B
+mean_B <- 59
+sd_B <- 13
+n_B <- 100
+
+# Set the confidence level
+confidence_level <- 0.90
+
+# Calculate the degrees of freedom using the Welch approximation
+df <- ((sd_A^2 / n_A + sd_B^2 / n_B)^2) / ((sd_A^2 / n_A)^2 / (n_A - 1) + (sd_B^2 / n_B)^2 / (n_B - 1))
+
+# Calculate the critical value for a two-tailed test
+t_critical <- qt((1 + confidence_level) / 2, df = df)
+
+# Calculate the margin of error
+margin_of_error <- t_critical * sqrt((sd_A^2 / n_A) + (sd_B^2 / n_B))
+
+# Calculate the confidence interval
+lower_bound <- (mean_A - mean_B) - margin_of_error
+upper_bound <- (mean_A - mean_B) + margin_of_error
+
+# Print the results
+cat("90% Confidence Interval:", lower_bound, "to", upper_bound, "\n")
+
+```
+
+
+C)
+In light of the test statistic's outcome, P-value, and 90% confidence interval:
+
+At 0.2241349, the P-value is higher than 0.05. This indicates that, with a 95% confidence level, we are unable to reject the null hypothesis. The data does not support the hypothesis that the averages of the two groups differ significantly.
+
+The difference in averages between the two groups, with a 90% confidence interval, is [-0.7104422, 4.710442]. Since zero is included in this interval, it is possible that there is not a discernible difference between the two groups.
+
+In summary, this analysis indicates that there is insufficient data to support a significant difference between the two groups' average scores. Statistical tests, however, only offer evidence; they cannot establish a conclusion.
+In light of the test statistic's outcome, P-value, and
+
+
+##Q5)
+
+A)
+```{r}
+# Data for the treatment group
+treatment <- c(-2.3, -0.7, -0.2, 0.1, 0.5, 0.8, 0.9, 1.6, 2.0, 3.9, 4.5, 6.0)
+
+# Data for the control group
+control <- c(-2.9, -1.5, -0.9, -0.8, -0.7, -0.5, -0.2, 0.2, 0.6, 1.2, 1.9, 2.8)
+
+# Paired samples t-test
+t_test_result <- t.test(treatment, control, paired = TRUE)
+
+# Check for normality using Q-Q plot
+qqnorm(treatment - control)
+qqline(treatment - control)
+
+# Print t-test results
+print(t_test_result)
+
+```
+
+B)
+```{r}
+# Perform a paired samples t-test (one-tailed, positive direction)
+t_test_result <- t.test(treatment, control, paired = TRUE, alternative = "greater")
+
+# Print the one-tailed p-value
+cat("One-tailed p-value:", t_test_result$p.value, "\n")
+```
+
+C)
+```{r}
+differences <- treatment - control
+
+# Calculate sample mean difference and standard deviation of differences
+mean_diff <- mean(differences)
+sd_diff <- sd(differences)
+
+# Sample size
+n <- length(differences)
+
+# Calculate the critical value for a two-tailed test
+t_critical <- qt(0.975, df = n - 1)
+
+# Calculate the margin of error
+margin_of_error <- t_critical * (sd_diff / sqrt(n))
+
+# Calculate the confidence interval
+lower_bound <- mean_diff - margin_of_error
+upper_bound <- mean_diff + margin_of_error
+
+# Print the results
+cat("95% Confidence Interval:", lower_bound, "to", upper_bound, "\n")
+```
+
+D)
+
+
+
+##Q6)
+A) The experimental unit in this study is an individual with type 2 diabetes. Measurements are taken on each individual's glycemic index under two conditions: after consuming dates without coffee and after consuming dates with coffee.
+
+Measurements Taken:
+  -Glycemic index after consuming dates without coffee.
+  -Glycemic index after consuming dates with coffee.
+  
+Thus, it's a paired samples or repeated measures design issue rather than one with one or two independent samples. The same individuals are employed in this design for every treatment or condition, and the variations in the measurements are examined.
+
+B)
+```{r}
+# Given data
+mean_diff <- 11.5
+sd_diff <- 21
+n <- 10
+
+# Calculate the t-statistic
+t_stat <- (mean_diff - 0) / (sd_diff / sqrt(n))
+
+# Print the t-statistic
+cat("t-statistic:", t_stat, "\n")
+
+
+```
+
+C)A p-value of 0.12 suggests that there is not enough evidence to reject the null hypothesis at a conventional significance level (e.g., 0.05). However, it's important to note that a non-significant result does not provide certainty that the null hypothesis is true. Instead, it indicates that there isn't sufficient evidence in the sample to confidently reject the null hypothesis.
+
+In the context of the study, where the null hypothesis is that the mean difference in glycemic index between dates without coffee and dates with coffee is zero, a p-value of 0.12 suggests that the observed mean difference in the sample is not statistically significant. This does not mean that there is no difference in the population; it simply means that the evidence from the sample is not strong enough to reject the null hypothesis.
+
+In summary, based on the information provided, it is not correct to conclude with certainty that the glycemic index of dates is the same with or without coffee. The result suggests a lack of strong evidence in the sample to reject the null hypothesis, but it does not provide conclusive evidence about the true difference in the population.

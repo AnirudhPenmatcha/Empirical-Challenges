@@ -1,0 +1,5 @@
+# Question 3
+
+crimeData <- read.table("abortion.dat", header = TRUE, sep = "\t")
+summary(crimeData)
+lm()

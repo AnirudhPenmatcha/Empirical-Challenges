@@ -1,0 +1,6 @@
+"0","print(paste(""The number of people that gave Trump higher score than Clinton were"",sum(ANESpilot$TrumpFT > ANESpilot$ClintonFT)))
+"
+"1","[1]"
+"1"," ""The number of people that gave Trump higher score than Clinton were 540"""
+"1","
+"

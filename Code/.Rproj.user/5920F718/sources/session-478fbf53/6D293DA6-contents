@@ -1,0 +1,217 @@
+---
+title: "In-class 10/24/23"
+author: "S520"
+date: "2023-10-24"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Depression data:
+```{r}
+Before <- c(1.83, 0.50, 1.62, 2.48, 1.68, 1.88, 1.55, 3.06, 1.30)
+After <- c(0.88, 0.65, 0.60, 2.05, 1.06, 1.29, 1.06, 3.14, 1.29)
+plot(Before, After)
+```
+```{r}
+Changes <- After - Before
+Changes
+```
+
+Let mu be the expected change in HSF score after taking the drug.
+
+H0 : mu >= 0
+
+H1 : mu < 0
+
+This is a one-tailed test.
+
+We have an extremely small sample. Can we do a t-test?
+
+This would assume the data comes from a Normal distribution.
+
+```{r}
+qqnorm(Changes)
+```
+
+Leap of faith: Assume that the population is Normal.
+
+Calculate your t-statistic:
+```{r}
+xbar <- mean(Changes)
+s <- sd(Changes)
+n <- length(Changes)
+c(xbar, s, n)
+```
+```{r}
+t.stat <- (xbar - 0) / (s / sqrt(n))
+t.stat
+```
+
+Compare this to the left tail of a t-distribution with n-1 = 8 degrees of freedom:
+```{r}
+pt(t.stat, df = n - 1)
+```
+
+The P-value is less than 1%, which is quite small.
+
+Find a 95% CI:
+```{r}
+q <- qt(.975, df = 8)
+q
+xbar - q * s / sqrt(n)
+xbar + q * s / sqrt(n)
+```
+
+Our 95% CI says that the expected change (mu) in HSF score is a reduction between -0.75 and -0.10 units.
+
+We have evidence that mu is less than zero. On average, the HSF score is lower after the treatment. However, this isn't necessarily because of the drug -- it could be that e.g. score "naturally" go down with time.
+
+
+
+### Etrsucan and Italian skulls
+
+```{r}
+skulls <- scan("https://mtrosset.pages.iu.edu/StatInfeR/Data/skulls.dat")
+```
+
+You could split this vector into Etruscans and Italians:
+```{r}
+etruscans <- skulls[1:84]
+italians <- skulls[85:154]
+mean(etruscans)
+mean(italians)
+```
+
+Or you could create a data frame that has a categorical variable that's either "Etruscan" or "Italian":
+```{r}
+pop <- c(rep("Etruscan", 84), rep("Italian", 70))
+skulls.df <- data.frame(skulls, pop)
+skulls.means <- aggregate(skulls ~ pop, FUN = mean, data = skulls.df)
+skulls.means
+```
+
+Let Delta be the population mean breadth of Etruscan skulls minus the population mean breadth of Italian skulls.
+
+Find a point estimate, Delta.hat:
+```{r}
+skulls.means$skulls
+Delta.hat <- skulls.means$skulls[1] - skulls.means$skulls[2]
+Delta.hat
+```
+
+Test the hypotheses (two-sample, two-tailed):
+
+H0 : Delta = 0
+
+H1 : Delta is not 0
+
+Two options for the test:
+
+- *Student's* two-sample t-test: IID samples from Normal pops with equal population variances.
+
+- *Welch's* two-sample t-test: IID samples from Normal pops; variances may be equal or unequal.
+
+Student's: Check Normality:
+```{r}
+library(ggplot2)
+ggplot(skulls.df, aes(sample = skulls)) +
+  stat_qq() + facet_grid(~pop)
+```
+
+Approx. Normality seems like a reasonable assumption.
+
+Check equal variances:
+```{r}
+skulls.vars <- aggregate(skulls ~ pop, FUN = var, data = skulls.df)
+skulls.vars
+```
+
+close enough.
+
+Let's do Student's test:
+
+Pooled sample variance:
+```{r}
+v1 <- skulls.vars$skulls[1]
+v2 <- skulls.vars$skulls[2]
+n1 <- 84
+n2 <- 70
+sp2 <- ((n1 - 1) * v1 + (n2 - 1) * v2) / (n1 + n2 - 2)
+sp2
+```
+
+Student's t-statistic:
+```{r}
+t.stud <- (Delta.hat - 0) / sqrt(sp2 * (1/n1 + 1/n2))
+t.stud
+```
+
+Compare to a t-distribution with n1 + n2 - 2 degrees of freedom:
+```{r}
+2 * (1 - pt(abs(t.stud), df = n1 + n2 - 2))
+```
+
+We reject the null that the pop means are equal. On average, Etruscan skulls are broader than Italian skulls.
+
+
+Welch's two-sample test:
+
+Find the standard error of Delta hat:
+```{r}
+std.error <- sqrt(v1 / n1 + v2 / n2)
+std.error
+```
+
+Find Welch's t-statistic:
+```{r}
+t.welch <- Delta.hat / std.error
+t.welch
+```
+
+Find the DF:
+```{r}
+DF <- (v1/n1 + v2/n2)^2 /
+  ((v1/n1)^2/(n1 - 1) + (v2/n2)^2/(n2 - 1))
+DF
+```
+
+Find the P-value:
+```{r}
+2 * (1 - pt(abs(t.welch), df = DF))
+```
+
+Same conclusion as Student's.
+
+We should also find a 95% CI for Delta:
+```{r}
+q <- qt(.975, df = DF)
+q
+```
+```{r}
+Delta.hat - qt(.975, df = DF) * std.error
+Delta.hat + qt(.975, df = DF) * std.error
+```
+
+We're 95% confident that the difference between av. Etruscan skull breadth and av. Italian skull breadth is 9 to 13 mm (Etruscans are broader.)
+
+
+Easy way:
+```{r}
+# Welch's
+t.test(skulls ~ pop, data = skulls.df)
+```
+
+```{r}
+# Student's
+t.test(skulls ~ pop, var.equal = TRUE, data = skulls.df)
+```
+
+
+
+
+
+
+

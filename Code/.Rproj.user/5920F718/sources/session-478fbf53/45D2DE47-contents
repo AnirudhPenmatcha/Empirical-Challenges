@@ -1,0 +1,131 @@
+---
+title: "Anirudh PS8.Rmd"
+output: html_document
+date: "2023-10-28"
+---
+
+
+# 1
+
+# c.
+
+```{r}
+p <- 1- pbinom(12,20,0.5)
+p
+```
+
+# d.
+```{r}
+1-pbinom(19,20,0.5)
+p
+```
+
+# 3
+
+# a. 
+
+```{r}
+pbinom(15, 100, 1/6)
+```
+
+# b.
+
+```{r}
+pbinom(59, 1000, 32/663)
+```
+
+# c.
+
+# Left tailed test
+```{r}
+pbinom(1150, 2215, 0.5)
+```
+# Right tailed test
+```{r}
+1 - pbinom(1149, 2215, 0.5)
+```
+
+# The minimum value between the two is for the right tailed one.
+# Two tailed value
+```{r}
+(1 - pbinom(1149, 2215, 0.5)) * 2
+```
+
+# d.
+
+```{r}
+1-pbinom(236,720,0.25)
+```
+
+# 5
+
+# a.
+
+```{r}
+mean <- 6.5
+sd <- 12
+n<- 61
+mu0 <- 0
+t.stat <- (mean - mu0)/(sd/sqrt(n))
+t.stat
+```
+
+# b.
+
+```{r}
+1-pt(t.stat,df = n-1)
+```
+
+# 95% confidence interval
+
+
+```{r}
+mean - qt(.975,df=n-1) * sd / sqrt(n)
+```
+
+```{r}
+mean + qt(.975, df = n-1) * sd / sqrt(n)
+```
+
+
+# 6
+```{r}
+ANESpilot <- read.table("ANESpilot.txt", header = TRUE)
+head(ANESpilot)
+```
+
+
+# c
+
+```{r}
+print(paste("The number of people that gave Clinton higher score than Trump were",sum(ANESpilot$ClintonFT > ANESpilot$TrumpFT)))
+```
+
+
+```{r}
+print(paste("The number of people that gave Trump higher score than Clinton were",sum(ANESpilot$TrumpFT > ANESpilot$ClintonFT)))
+```
+
+```{r}
+right_tailed <- 1-pbinom(622,1163,0.5)
+right_tailed
+```
+```{r}
+left_tailed <- pbinom(540,1163,0.5)
+left_tailed
+```
+```{r}
+pvalue <- 2 * (min(right_tailed , left_tailed))
+pvalue
+```
+
+so the data is not consisent.
+
+```{r}
+data <- read.table("ANESpilot.txt",header = TRUE)
+```
+
+```{r}
+data
+```
+

@@ -1,0 +1,221 @@
+---
+title: "ProblemSet9-AnirudhPenmatcha"
+output: html_document
+date: "2023-11-02"
+---
+
+# Question 1 (Problem Set D)
+
+# 1.
+
+The measurements don't appear to be from a symmetric distribution because the values are growing towards the right. This means that the data is heavily concentrated to the right and hence it will be left skewed.
+
+
+```{r}
+normal <- c(4.1, 6.3, 7.8, 8.5, 8.9, 10.4, 11.5, 12.0, 13.8, 17.6, 24.3, 37.2)
+
+diabetic <- c(11.5, 12.1, 16.1, 17.8, 24, 28.8, 33.9, 40.7, 51.3, 56.2, 61.7, 69.2)
+```
+
+For a distribution to be symmetric, their mean and median have to be close to each other 
+```{r}
+print(paste(mean(normal), median(normal)))
+```
+
+We can see that the mean and median are not close for the normal data. Hence it is not symmetric.
+
+```{r}
+print(paste(mean(diabetic), median(diabetic)))
+```
+
+Again, mean and median are not close. Hence, they are not symmetric
+
+# 2.
+
+# plotting
+
+# plots of original data
+```{r}
+plot(normal)
+```
+```{r}
+plot(diabetic)
+```
+# plots of data transformed with log
+```{r}
+plot(log(normal))
+log(normal)
+```
+
+```{r}
+plot(log(diabetic))
+log(diabetic)
+```
+# plots of data transformed with square root
+
+```{r}
+plot(sqrt(normal))
+sqrt(normal)
+```
+```{r}
+plot(sqrt(diabetic))
+sqrt(diabetic)
+```
+
+The plots of the data transformed with log look closer to a sample obtained from a symmetric distribution. The data transformed with square roots has one issue which is the sqrt(normal) looks less symmetric than log(normal). Hence I would prefer log transformation here. 
+
+# 3.
+
+The transformed measurements of log appear to be from a normal distribution because most of the data is concentrated in the middle
+
+# 4.
+
+
+# Question 2
+
+# a.
+The problem we are working with here has provided a very small sample size which is 7. Hence, using the t-distribution becomes imperative
+
+# b.
+
+```{r}
+delta.hat <- 68.5 - 65.5
+var.male <- 3^2
+var.female <- 2.5^2
+SE <- sqrt(var.male/7 + var.female/7)
+```
+
+We are given the degrees of freedom as 11.6 and the value of R code qt(.975,df=11.62) as 2.187
+```{r}
+# confidence intervals of the t-distributions for the given samples of male and female heights
+
+print(paste("The upper interval = ", delta.hat + 2.187 * SE, " The lower interval = ", delta.hat - 2.187 * SE))
+```
+
+# c.
+We needn't conclude that there is no difference because there is a possibility for a combination where their differences in height can be 0 but also more and less than that. Generally speaking we shouldn't be hasty in jumping to conclusions in such cases especially when dealing with a small dataset. 
+
+# Question 3
+
+# a.
+The rule for student's test is that their variances must be equal. However, we are given the SD's as 15.9 and 17.3. Therefore, we'll need to use welch's test. And anyway when unsure, just use welch's ;)
+
+# b.
+```{r}
+delta.hat <- 24.3 - 16.8
+SE <- sqrt( (15.9^2)/592 + (17.3^2)/154 )
+T.Welch <- delta.hat/SE
+T.Welch
+```
+
+p-value
+```{r}
+2 * (1 - pt(abs(T.Welch), df = 225))
+```
+
+# c.
+
+95% confidence interval 
+```{r}
+print(paste("The upper interval = ", delta.hat + qt(.975, df = 225) * SE, " The lower interval = ", delta.hat - qt(.975, df = 225) * SE))
+```
+
+# Question 4
+
+# a.
+
+Because we are taking two samples out of one population and given that the standard deviations in the results of the two groups are not equal, it is valid to use welch's test here
+```{r}
+delta.hat <- 61 - 59
+SE <- sqrt(((10^2)/100) + ((13^2)/100))
+T.Welch <- delta.hat/SE
+T.Welch
+```
+
+```{r}
+df <- (((10^2)/100+(12^2)/100)^2)/ (((10^2)/100)^2/99+((13^2)/100)^2/99)
+```
+
+p-value
+```{r}
+2 * (1 - pt(abs(T.Welch), df = df))
+```
+
+
+# b.
+
+#lower interval
+```{r}
+delta.hat - qt(.975, df = df) * SE
+```
+#upper interval
+```{r}
+delta.hat + qt(.975, df = df) * SE
+```
+
+# c. 
+
+I can conclude that the p-value being high enough we can accept null and reject alternative. We can say with 95% confidence that there is basically no difference between the two groups 
+
+# Question 5
+
+# a. 
+
+I would use t test here because the sample is quite small (12). The assumption made in t test is that the data follows a normal distribution. 
+In test scores, generally, we can observe a normal distribution. So it does come close to satisfying the assumption of this test.
+
+
+# b.
+
+Let u be the expected change. So H0: u0 < 0; H1: u1 >or= 0
+```{r}
+before <- c(-2.3, -0.7, -0.2, 0.1, 0.5, 0.8, 0.9, 1.6, 2.0, 3.9, 4.5, 6.0)
+after <- c(-2.9, -1.5, -0.9, -0.8, -0.7, -0.5, -0.2, 0.2, 0.6, 1.2, 1.9, 2.8)
+change <- before - after
+T.stat <- (mean(change) - 0 / sd(change) / sqrt(12))
+T.stat
+```
+
+p-value
+```{r}
+1 - pt(T.stat, df = 11)
+```
+
+# c. 
+
+95% confidence interval
+```{r}
+print(paste("The upper interval = ", mean(change) + qt(.975, df = 11) * sd(change) / sqrt(12) , " The lower interval = ", mean(change) - qt(.975, df = 11) * sd(change) / sqrt(12) )) 
+```
+
+# Question 6
+
+# a.
+
+The experimental unit here is a type 2 diabetes patient. The measurements taken here are of patients' glycemic index when they had only dates and when they had dates with coffee. This problem is only with one independent sample 
+
+# b. 
+The null hypothesis will be H0: u0 = 0 and H1: u0 != 0 
+```{r}
+t.stat <- (11.5 - 0) / (21/sqrt(10))
+t.stat
+```
+right-tailed
+```{r}
+1-pt(t.stat, df = 9)
+```
+left-tailed
+```{r}
+pt(t.stat, df = 9)
+```
+The minimum here is right-tailed
+```{r}
+2*(1-pt(t.stat, df = 9))
+```
+
+The probability is decently high for us to accept null and reject alternative hypothesis
+
+# c.
+
+The p-value is not high enough first of all to say conclusively that dates' glycemic index changes with or without coffee. Second of all the sample size is not large enough. We need more data. 
+

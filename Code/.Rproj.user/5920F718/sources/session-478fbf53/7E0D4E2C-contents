@@ -1,0 +1,222 @@
+---
+title: "Problem Set 7"
+output: html_document
+date: "2023-10-20"
+---
+
+# Question 1e
+
+```{r}
+mean <- 0
+n <- 100
+xbar <- 0.5
+sd <- 2.323
+Z <- (xbar - mean)/(sd/sqrt(n))
+Z
+```
+```{r}
+pnorm(Z)
+```
+```{r}
+1 - pnorm(Z)
+```
+
+
+# Question 2b
+
+Given: 
+n = 1000
+mean = 9.06,
+variance = 565.2476
+Standard deviation = ?
+Standard error = ?
+
+```{r}
+mean <- 9.06
+sd <- sqrt(565.2476)
+se <- sd/sqrt(1000)
+```
+
+95% confidence for the mean number of citations
+alpha = 0.05
+alpha/2 = 0.025
+
+```{r}
+upper <- mean + qnorm(0.975,0,1) * se
+lower <- mean - qnorm(0.975,0,1) * se
+
+print(paste("The approximate 95% confidence interval for the mean number of citations is" ,upper ,"and" ,lower))
+```
+
+# Question 2c
+
+Given that 460 out of 1000 articles don't have citations
+This question can be turned into a bernoulli trial
+Probability that a article has no citation p = 460/1000 = 0.46
+With 1000 trials, xbar ~ equal to p
+We know that sd = sqrt(xbar*(1-xbar))
+```{r}
+xbar <- 0.46
+n <- 1000                               
+sd <- sqrt(xbar*(1-xbar)) 
+se <- sd/sqrt(n)
+print(paste("standard deviation = " ,sd)) 
+print(paste("standard error is = " , se))
+```
+```{r}
+upper <- xbar + qnorm(0.975) * se
+lower <- xbar- qnorm(0.975) * se
+
+print(paste("The 95% confidence interval of journal with no citation is",upper , "and" ,lower))
+```
+
+# Question 3
+
+Reading the data
+
+```{r}
+data <- read.table("ANES2016.txt",header = TRUE)
+View(data)
+nrow(data)
+```
+
+Plotting the distribution of the data
+
+```{r}
+library(ggplot2)
+ggplot(data, aes(x = Thermometer)) + geom_histogram()
+```
+
+Plotting Trump alone
+
+```{r}
+trump <- subset(data,Candidate == "Trump")
+ggplot(trump, aes(x = Thermometer)) + geom_histogram()
+```
+
+Plotting Clinton alone
+
+```{r}
+clinton <- subset(data,Candidate == "Clinton")
+ggplot(clinton, aes(x = Thermometer)) + geom_histogram()
+```
+
+Plotting Sanders alone
+
+```{r}
+sanders <- subset(data,Candidate == "Sanders")
+ggplot(sanders, aes(x = Thermometer)) +geom_histogram()
+```
+
+# Question 3b
+
+```{r}
+temp100 <- subset(data, Thermometer <= 100)
+
+trump <- subset(temp100, Candidate == "Trump")
+meanTrump <- mean(trump$Thermometer)
+sdTrump = sd(trump$Thermometer)
+
+clinton <- subset(temp100, Candidate == "Clinton")
+meanClinton <- mean(clinton$Thermometer)
+sdClinton <- sd(clinton$Thermometer)
+
+sanders <- subset(temp100, Candidate == "Sanders")
+meanSanders <- mean(sanders$Thermometer)
+sdSanders <- sd(sanders$Thermometer)
+
+print(paste("Trump's Mean = ", meanTrump," Standard Deviation = ", sdTrump ))
+print(paste("Clinton's Mean = ", meanClinton," Standard Deviation = ", sdClinton ))
+print(paste("Sanders' Mean = ", meanSanders," Standard Deviation = ", sdSanders ))
+```
+
+# Question 3c
+
+Find 99% confidence intervals for:
+
+i. Trump’s mean feeling thermometer score if all adult U.S. citizens were asked in January 2016.
+alpha = 0.01; alpha/2 = 0.005
+
+```{r}
+seTrump <- sd(trump$Thermometer)/sqrt(1197)
+upper <- meanTrump + qnorm(0.995) * seTrump    
+lower <- meanTrump - qnorm(0.995) * seTrump
+print(paste("99% confidence interval of Trumps mean feeling thermometer of", meanTrump," is", upper, "and", lower))
+```
+
+ii. Clinton’s mean feeling thermometer score if all adult U.S. citizens were asked in January 2016.
+
+```{r}
+seClint <- sd(clinton$Thermometer)/sqrt(1199)
+upper <- meanClinton + qnorm(0.995) * seTrump        
+lower <- meanClinton - qnorm(0.995) * seTrump
+print(paste("99% confidence interval of Clinton mean feeling thermometer of", meanClinton," is", upper, "and", lower))
+```
+
+iii. Sanders’ mean feeling thermometer score if all adult U.S. citizens were asked in January 2016.
+
+```{r}
+seSanders <- sd(sanders$Thermometer)/sqrt(1192)
+upper <- meanSanders + qnorm(0.995) * seTrump   
+lower <- meanSanders - qnorm(0.995) * seTrump
+print(paste("99% confidence interval of Sanders mean feeling thermometer of", meanSanders," is", upper, "and", lower))
+```
+
+# Question 4
+
+Given, SD = 6
+We know n = (2 * q * SD / L)^2
+
+Given interval length = 2 feet
+Q value for 99% interval = 
+```{r}
+qnorm(0.995)
+```
+
+Solving for n =
+```{r}
+n = (2 * qnorm(0.995) * 6/2)^2
+n
+```
+
+Therefore, n = 238.85 ~ 239
+
+
+# Question 5a
+
+This can be considerd a bernoulli trial
+A person either supports or does not support same-sex marriage
+If 63% of 1009 support, then p ~ 0.63
+In a bernoulli random variable, we can assume p to be same as the expected value (xbar = 0.63) 
+
+```{r}
+xbar <- 0.63
+sd <- sqrt(xbar *(1-xbar))
+se <- sd / sqrt(1009)
+se
+```
+
+```{r}
+upper <- xbar + qnorm(0.975) * se
+lower <- xbar - qnorm(0.975) * se
+print(paste("95% confidence interval for the percentage of all US adults who supports same sex marriage is", upper, "and" , lower))
+```
+
+# Question 5b
+
+
+```{r}
+confidence_level <- 0.95
+length_confidence_interval <- 2
+
+z <- qnorm((1 + confidence_level) / 2)
+n <- (2 * z * sd / length_confidence_interval) ^ 2
+
+print(paste("The sample size required will be = ", n))
+```
+
+
+
+
+
+

@@ -1,0 +1,6 @@
+"0","print(paste(""The upper interval = "", delta.hat + qt(.975, df = 225) * SE, "" The lower interval = "", delta.hat - qt(.975, df = 225) * SE))
+"
+"1","[1]"
+"1"," ""The upper interval =  5.90854851248174  The lower interval =  0.0914514875182597"""
+"1","
+"

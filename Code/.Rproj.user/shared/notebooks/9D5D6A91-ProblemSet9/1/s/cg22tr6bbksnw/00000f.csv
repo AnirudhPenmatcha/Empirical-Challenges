@@ -1,0 +1,6 @@
+"0","print(paste(""The upper interval = "", mean(change) + qt(.975, df = 11) * sd(change) / sqrt(12) , "" The lower interval = "", mean(change) - qt(.975, df = 11) * sd(change) / sqrt(12) )) 
+"
+"1","[1]"
+"1"," ""The upper interval =  2.03854000253873  The lower interval =  0.944793330794603"""
+"1","
+"

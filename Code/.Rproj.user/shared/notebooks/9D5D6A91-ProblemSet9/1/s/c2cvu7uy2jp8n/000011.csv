@@ -1,0 +1,6 @@
+"0","print(paste(""The upper interval = "", delta.hat + 2.187 * SE, "" The lower interval = "", delta.hat - 2.187 * SE))
+"
+"1","[1]"
+"1"," ""The upper interval =  6.22800861323864  The lower interval =  -0.228008613238641"""
+"1","
+"

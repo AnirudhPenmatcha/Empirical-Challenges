@@ -1,0 +1,9 @@
+"0","# Print the one-tailed p-value
+cat(""One-tailed p-value:"", t_test_result$p.value, ""\n"")
+"
+"1","One-tailed p-value:"
+"1"," "
+"1","4.4409e-05"
+"1"," "
+"1","
+"
